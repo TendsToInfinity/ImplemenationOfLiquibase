@@ -1,0 +1,47 @@
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+import liquibase.Contexts;
+import liquibase.LabelExpression;
+import liquibase.Liquibase;
+import liquibase.database.Database;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.ClassLoaderResourceAccessor;
+//import java.sql.DriverManager;
+import com.microsoft.sqlserver.jdbc.SQLServerDriver;
+
+
+
+
+public class InvokingLiquibase {
+ 
+	public static void main(String[] args) throws IOException,  SQLException, LiquibaseException, ClassNotFoundException {
+		// TODO Auto-generated method stub
+		
+		
+		java.sql.Connection connection = openConnection(); //your openConnection logic here
+
+		Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection));
+		
+		Liquibase liquibase = new liquibase.Liquibase("changelog-master.xml", new ClassLoaderResourceAccessor(), database);
+		 //database.defaultSchemaName = "schema_name"
+		liquibase.update(new Contexts(), new LabelExpression());
+		
+	}
+
+	
+
+	//@SuppressWarnings("unused")
+	private static Connection openConnection() throws SQLException, ClassNotFoundException {
+		// TODO Auto-generated method stub
+		Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+		String connectionUrl = "jdbc:sqlserver://DBConnectionDetails;databaseName=SchemaName";
+		Connection connection = DriverManager.getConnection(connectionUrl, "username", "Password");
+		return connection;
+	}
+
+}
